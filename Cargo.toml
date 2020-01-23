@@ -1,10 +1,12 @@
 [package]
-name        = "mecs"
-version     = "0.1.0"
-authors     = ["filipe <filipejacintorodrigues1@gmail.com>"]
-edition     = "2018"
-description = "An ecs library with a focus on iteration performance"
-license     = "MIT"
+name         = "mecs"
+version      = "0.1.0"
+authors      = ["Filipe Rodrigues <filipejacintorodrigues1@gmail.com>"]
+edition      = "2018"
+description  = "An ecs library with a focus on iteration performance"
+license_file = "LICENCE"
+repository   = "https://github.com/Zenithsiz/mecs"
+readme       = "README"
 
 [dependencies]
 
