@@ -4,17 +4,13 @@ version      = "0.1.0"
 authors      = ["Filipe Rodrigues <filipejacintorodrigues1@gmail.com>"]
 edition      = "2018"
 description  = "An ecs library with a focus on iteration performance"
-license-file = "LICENCE"
+license-file = "LICENSE"
 repository   = "https://github.com/Zenithsiz/mecs"
 readme       = "README.md"
 keywords     = ["ecs",]
 categories   = ["algorithms",]
 
 [dependencies]
-
-# Traits
-err-derive  = "0.2"
-derive_more = "0.99"
 
 # Serialize
 serde = { version = "1.0", features = ["derive"], optional = true }
