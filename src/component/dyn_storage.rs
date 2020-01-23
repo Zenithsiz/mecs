@@ -2,7 +2,7 @@
 //! 
 //! This modules contains the [`DynStorage`] type
 //! which is a storage capable of storing any type
-//! that may be stored in an [Any] with static lifetimes
+//! that may be stored in an [Any](std::any::Any) with static lifetimes
 
 // Traits
 use std::fmt::Debug;
