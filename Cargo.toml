@@ -6,7 +6,7 @@ edition      = "2018"
 description  = "An ecs library with a focus on iteration performance"
 license-file = "LICENCE"
 repository   = "https://github.com/Zenithsiz/mecs"
-readme       = "README"
+readme       = "README.md"
 keywords     = ["ecs",]
 categories   = ["algorithms",]
 
