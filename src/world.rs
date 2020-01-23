@@ -309,7 +309,7 @@ use crate::{KeyType, Storage, Entity};
 		}
 		
 		#[cfg(feature = "serde-serialize")]
-		impl<'de, S> serde::Deserialize<'de> for World<'de, S>
+		impl<'a, 'de, S> serde::Deserialize<'de> for World<'a, S>
 		where
 			S    : Storage<'a> + serde::Deserialize<'de>,
 			S::Id: KeyType,
@@ -322,7 +322,7 @@ use crate::{KeyType, Storage, Entity};
 				let entities = Vec::deserialize(deserializer)?;
 				
 				// And create the world from all entities
-				Self::from_components(entities)
+				Ok( Self::from_entities(entities) )
 			}
 		}
 	//--------------------------------------------------------------------------------------------------

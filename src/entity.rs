@@ -253,7 +253,7 @@ use crate::{KeyType, Storage, Component};
 				let components = Vec::deserialize(deserializer)?;
 				
 				// And create the entity from all components
-				Self::from_components(components)
+				Ok( Self::from_components(components) )
 			}
 		}
 	//--------------------------------------------------------------------------------------------------
