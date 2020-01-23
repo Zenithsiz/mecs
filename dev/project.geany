@@ -1,0 +1,72 @@
+[editor]
+line_wrapping=false
+line_break_column=72
+auto_continue_multiline=false
+
+[file_prefs]
+final_new_line=true
+ensure_convert_new_lines=false
+strip_trailing_spaces=false
+replace_tabs=false
+
+[indentation]
+indent_width=4
+indent_type=1
+indent_hard_tab_width=8
+detect_indent=false
+detect_indent_width=false
+indent_mode=2
+
+[project]
+name=mecs
+base_path=/media/Windows/Users/Filipe/Documents/Programming/rust/projects/mecs/
+description=
+file_patterns=
+
+[long line marker]
+long_line_behaviour=1
+long_line_column=72
+
+[VTE]
+last_dir=/media/Windows/Users/Filipe/Documents/Programming/rust/projects/pong/target/debug
+
+[prjorg]
+source_patterns=*.rs;
+header_patterns=*.rs;
+ignored_dirs_patterns=.*;target;
+ignored_file_patterns=*.rlib;
+generate_tag_prefs=2
+external_dirs=
+
+[build-menu]
+NF_00_LB=Check
+NF_00_CM=cargo clippy 
+NF_00_WD=%p
+EX_00_LB=Run
+EX_00_CM=cargo run
+EX_00_WD=%p
+EX_01_LB=
+EX_01_CM=
+EX_01_WD=
+RustFT_00_LB=
+RustFT_00_CM=
+RustFT_00_WD=
+filetypes=Rust;
+NF_02_LB=Build
+NF_02_CM=cargo build
+NF_02_WD=%p
+NF_03_LB=Doc
+NF_03_CM=cargo doc --no-deps
+NF_03_WD=%p
+NF_01_LB=Test
+NF_01_CM=cargo test
+NF_01_WD=%p
+
+[files]
+current_page=4
+FILE_NAME_0=147;None;0;EUTF-8;1;1;0;%2Fmedia%2FWindows%2FUsers%2FFilipe%2FDocuments%2FProgramming%2Frust%2Fprojects%2Fmecs%2FCargo.toml;0;4
+FILE_NAME_1=157;Rust;0;EUTF-8;1;1;0;%2Fmedia%2FWindows%2FUsers%2FFilipe%2FDocuments%2FProgramming%2Frust%2Fprojects%2Fmecs%2Fsrc%2Flib.rs;0;4
+FILE_NAME_2=2290;Rust;0;EUTF-8;1;1;0;%2Fmedia%2FWindows%2FUsers%2FFilipe%2FDocuments%2FProgramming%2Frust%2Fprojects%2Fmecs%2Fsrc%2Fcomponent.rs;0;4
+FILE_NAME_3=1838;Rust;0;EUTF-8;1;1;0;%2Fmedia%2FWindows%2FUsers%2FFilipe%2FDocuments%2FProgramming%2Frust%2Fprojects%2Fmecs%2Fsrc%2Fcomponent%2Fdyn_storage.rs;0;4
+FILE_NAME_4=831;Rust;0;EUTF-8;1;1;0;%2Fmedia%2FWindows%2FUsers%2FFilipe%2FDocuments%2FProgramming%2Frust%2Fprojects%2Fmecs%2Fsrc%2Fentity.rs;0;4
+FILE_NAME_5=1755;Rust;0;EUTF-8;1;1;0;%2Fmedia%2FWindows%2FUsers%2FFilipe%2FDocuments%2FProgramming%2Frust%2Fprojects%2Fmecs%2Fsrc%2Fworld.rs;0;4
