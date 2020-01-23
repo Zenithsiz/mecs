@@ -1,8 +1,9 @@
 //! Entity component system implementation
 
 // Features
-#![feature(unboxed_closures    )]
-#![feature(fn_traits           )]
+#![feature(unboxed_closures)]
+#![feature(fn_traits       )]
+#![feature(external_doc    )]
 
 // Warnings
 //--------------------------------------------------------------------------------------------------
@@ -41,3 +42,11 @@ pub mod world;
 pub use component::{Component, Storage, DynStorage};
 pub use entity   ::Entity;
 pub use world    ::{World, EntityId};
+
+
+
+// External docs
+
+/// Doc tests for "README.md"
+#[doc(include = "../README.md")]
+type _DoctestReadme = ();
