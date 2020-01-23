@@ -4,9 +4,11 @@ version      = "0.1.0"
 authors      = ["Filipe Rodrigues <filipejacintorodrigues1@gmail.com>"]
 edition      = "2018"
 description  = "An ecs library with a focus on iteration performance"
-license_file = "LICENCE"
+license-file = "LICENCE"
 repository   = "https://github.com/Zenithsiz/mecs"
 readme       = "README"
+keywords     = ["ecs",]
+categories   = ["algorithms",]
 
 [dependencies]
 
