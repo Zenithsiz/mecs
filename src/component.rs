@@ -8,13 +8,13 @@
 //!
 //! # Example
 //! 
-//! TODO: Make this work
-//! ```rust,ignore
+//! ```rust
 //! 
 //! mecs::impl_enum_storage! {
-//! 	enum Components<'a> {
+//! 	enum Components {
 //! 		A(i32),
-//! 		B(&'a str),
+//! 		B(&'static str),
+//! 		C(f32),
 //! 	}
 //! }
 //! ```
