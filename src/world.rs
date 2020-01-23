@@ -23,14 +23,13 @@
 //! world.add( mecs::entity![ DynStorage::new(1i32), DynStorage::new("hello") ] );
 //! world.add( mecs::entity![ DynStorage::new(2i32), DynStorage::new("world") ] );
 //! 
-//! let iter = world.iter_pred(pred_id);
-//! for entity in iter { for entity in entity {
-//! 
+//! let iter = world.iter_pred(pred_id).unwrap();
+//! for entity in iter {
 //! 	let num : &i32  = entity.get().unwrap();
 //! 	let name: &&str = entity.get().unwrap();
 //! 	
 //! 	println!("{}: {}", num, name);
-//! }}
+//! }
 //! ```
 //! 
 //! Prints:
