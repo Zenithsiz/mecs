@@ -2,6 +2,10 @@
 //! 
 //! An entity is a collection of components.
 
+// Modules
+#[cfg(test)]
+mod test;
+
 // Collections
 use std::collections::HashMap;
 
@@ -59,10 +63,10 @@ use crate::{KeyType, Storage, Component};
 
 // Impl
 //--------------------------------------------------------------------------------------------------
-	impl<'a, S> Entity<'a, S>
+	impl<'a, S, I> Entity<'a, S>
 	where
-		S    : Storage<'a>,
-		S::Id: KeyType,
+		S: Storage<'a, Id = I>,
+		I: KeyType + 'a,
 	{
 		// Constructors
 		//--------------------------------------------------------------------------------------------------
@@ -174,16 +178,12 @@ use crate::{KeyType, Storage, Component};
 			}
 			
 			/// Returns an iterator over all components in this entity
-			// TODO: Use impl Trait when possible
-			#[must_use]
-			pub fn components(&self) -> std::collections::hash_map::Values<'_, S::Id, S> {
+			pub fn components(&self) -> impl Iterator<Item = &S> {
 				self.components.values()
 			}
 			
 			/// Returns a mutable iterator over all components in this entity
-			// TODO: Use impl Trait when possible
-			#[must_use]
-			pub fn components_mut(&mut self) -> std::collections::hash_map::ValuesMut<'_, S::Id, S> {
+			pub fn components_mut(&mut self) -> impl Iterator<Item = &mut S> {
 				self.components.values_mut()
 			}
 		//--------------------------------------------------------------------------------------------------
@@ -204,10 +204,10 @@ use crate::{KeyType, Storage, Component};
 		//--------------------------------------------------------------------------------------------------
 	}
 	
-	impl<'a, S> Default for Entity<'a, S>
+	impl<'a, S, I> Default for Entity<'a, S>
 	where
-		S    : Storage<'a>,
-		S::Id: KeyType,
+		S: Storage<'a, Id = I>,
+		I: KeyType + 'a,
 	{
 		#[must_use]
 		fn default() -> Self {

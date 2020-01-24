@@ -76,20 +76,4 @@ use crate::{Storage, Component};
 			storage.1.downcast_mut()
 		}
 	}
-	
-	/*
-	auto trait IsDynStorage {}
-	impl IsDynStorage for DynStorage {}
-	*/
-	
-	/*
-	impl<T> From<T> for DynStorage
-	where
-		T: Component<'static, DynStorage>
-	{
-		fn from(value: T) -> Self {
-			Self::new(value)
-		}
-	}
-	*/
 //--------------------------------------------------------------------------------------------------
