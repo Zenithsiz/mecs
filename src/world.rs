@@ -133,6 +133,17 @@ use crate::{KeyType, Storage, Entity};
 		// Add / Remove
 		//--------------------------------------------------------------------------------------------------
 			/// Adds an entity to this world
+			/// 
+			/// # Return
+			/// This function returns the id associated with the
+			/// entity inserted. Usually this id is not used, as
+			/// iteration through the world is done using either
+			/// the predicates, or with global iteration.
+			/// 
+			/// Currently removal of entities is only supported
+			/// through id, but in the future, it will be added
+			/// a feature to remove entities during iteration as
+			/// well.
 			pub fn add(&mut self, entity: Entity<'a, S>) -> EntityId
 			{
 				// Get the id to use for this entity
@@ -160,6 +171,11 @@ use crate::{KeyType, Storage, Entity};
 			}
 			
 			/// Removes an entity from this world given it's id
+			/// 
+			/// # Ids
+			/// Currently this function is the only way to remove entities
+			/// from the world, in the future a feature will be added to
+			/// remove them during iteration.
 			pub fn remove(&mut self, id: EntityId) -> Option< Entity<'a, S> >
 			{
 				// And remove the entity
