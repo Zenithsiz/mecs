@@ -1,6 +1,22 @@
 //! Entities, collections of components
 //! 
 //! An entity is a collection of components.
+//! 
+//! # Example
+//! 
+//! ```rust
+//! use mecs::{Entity, DynStorage};
+//! 
+//! let entity: Entity<DynStorage> = mecs::entity![
+//! 	DynStorage::new(23i32),
+//! 	DynStorage::new("Test"),
+//! 	DynStorage::new(5.257),
+//! ];
+//! 
+//! let num: i32 = *entity.get().unwrap();
+//! 
+//! assert_eq!(num, 23);
+//! ```
 
 // Modules
 #[cfg(test)]
@@ -19,18 +35,6 @@ use crate::{KeyType, Storage, Component};
 // Macros
 //--------------------------------------------------------------------------------------------------
 	/// Creates an entity from it's components
-	/// 
-	/// # Example
-	/// 
-	/// ```rust
-	/// use mecs::{Entity, DynStorage};
-	/// 
-	/// let entity: Entity<DynStorage> = mecs::entity![
-	/// 	DynStorage::new(23),
-	/// 	DynStorage::new("Test"),
-	/// 	DynStorage::new(5.257),
-	/// ];
-	/// ```
 	#[macro_export]
 	macro_rules! entity
 	{
@@ -173,7 +177,7 @@ use crate::{KeyType, Storage, Component};
 		// Iterators
 		//--------------------------------------------------------------------------------------------------
 			/// Returns an iterator over all component ids in this entity
-			pub fn ids(&self) -> impl Iterator<Item = &<S as Storage<'a>>::Id> {
+			pub fn ids(&self) -> impl Iterator<Item = &I> {
 				self.components.keys()
 			}
 			
