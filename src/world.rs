@@ -24,7 +24,7 @@
 //! world.add( mecs::entity![ DynStorage::new(2i32), DynStorage::new("world") ] );
 //! 
 //! let iter = world.iter_pred(pred_id).unwrap();
-//! for entity in iter {
+//! for (entity, id) in iter {
 //! 	let num : &i32  = entity.get().unwrap();
 //! 	let name: &&str = entity.get().unwrap();
 //! 	
@@ -46,8 +46,8 @@ pub mod iter;
 
 // Exports
 pub use entity_id::EntityId;
-pub use iter::{PredIter, PredIterMut};
-    use pred::{Predicate, PredicateIds};
+pub use iter     ::{PredIter, PredIterMut};
+    use pred     ::{Predicate, PredicateIds};
 
 // Collections
 use std::collections::HashMap;
@@ -71,22 +71,31 @@ use crate::{KeyType, Storage, Entity};
 	/// from this world.
 	/// The entity id 0 is reserved to mean a null entity,
 	/// that is, an entity which does not exist.
+	/// 
+	/// # Iteration
+	/// Iteration is done through either global iteration
+	/// using [`World::iter_all`] or [`World::iter_all_mut`],
+	/// although for most systems you would first register a
+	/// predicate with [`World::add_predicate`] and then iterate
+	/// over it using the predicate id with either [`World::iter_pred`]
+	/// or [`World::iter_pred_mut`]
 	pub struct World<'a, S>
 	where
 		S    : Storage<'a>,
 		S::Id: KeyType,
 	{
-		/// All of the entities
+		/// All of the entities, stored by their entity id
 		pub(in self) entities: HashMap<EntityId, Entity<'a, S>>,
 		
-		/// The next id to use
+		/// The next entity id to use when adding entities
 		next_entity_id: EntityId,
 		
 		
-		/// All predicates
+		
+		/// All of the predicate ids, stored by their predicate id
 		pub(in self) predicates: HashMap<usize, PredicateIds<'a, S>>,
 		
-		/// Next predicate id to use
+		/// The next predicate id to use when adding predicates
 		next_pred_id: usize,
 	}
 //--------------------------------------------------------------------------------------------------
@@ -100,10 +109,20 @@ use crate::{KeyType, Storage, Entity};
 	{
 		// Constructors
 		//--------------------------------------------------------------------------------------------------
-			/// Create a new empty world
+			/// Creates a new world with no entities and no predicates
+			/// 
+			/// # Example
+			/// 
+			/// ```rust
+			/// # use mecs::{World, DynStorage};
+			/// let world: World<DynStorage> = World::new();
+			/// 
+			/// assert_eq!(world.iter_all().count(), 0);
+			/// ```
 			#[must_use]
 			pub fn new() -> Self
 			{
+				// Note: Ids start at 1 so 0 can be a null id
 				Self {
 					entities: HashMap::new(),
 					next_entity_id : EntityId::new(1),
@@ -113,9 +132,29 @@ use crate::{KeyType, Storage, Entity};
 				}
 			}
 			
-			/// Creates a world from a list of entities
+			/// Creates a new world from any iterator over entities
+			/// 
+			/// # Example
+			/// 
+			/// ```rust
+			/// # use mecs::{World, DynStorage};
+			/// let world = World::from_entities( vec![
+			/// 	mecs::entity![
+			/// 		DynStorage::new(5),
+			/// 		DynStorage::new("Hello, World!"),
+			/// 	],
+			/// 	mecs::entity![
+			/// 		DynStorage::new(9),
+			/// 		DynStorage::new("Bye, World!"),
+			/// 	],
+			/// ]);
+			/// 
+			/// assert_eq!(world.iter_all().count(), 2);
+			/// ```
 			#[must_use]
-			pub fn from_entities(entities: Vec< Entity<'a, S> >) -> Self
+			pub fn from_entities<I>(entities: I) -> Self
+			where
+				I: IntoIterator<Item = Entity<'a, S>>
 			{
 				// Create an empty world
 				let mut world = Self::new();
@@ -134,16 +173,26 @@ use crate::{KeyType, Storage, Entity};
 		//--------------------------------------------------------------------------------------------------
 			/// Adds an entity to this world
 			/// 
-			/// # Return
+			/// # Return value
 			/// This function returns the id associated with the
-			/// entity inserted. Usually this id is not used, as
-			/// iteration through the world is done using either
-			/// the predicates, or with global iteration.
+			/// entity inserted so it may be accessed in the future.
+			/// Usually you need not keep this id, as iterating over
+			/// the world is done with predicates, (see [`World::add_pred`]
+			/// and [`World::iter_pred`]).
 			/// 
-			/// Currently removal of entities is only supported
-			/// through id, but in the future, it will be added
-			/// a feature to remove entities during iteration as
-			/// well.
+			/// # Example
+			/// 
+			/// ```rust
+			/// # use mecs::{World, DynStorage};
+			/// let mut world = World::new();
+			/// 
+			/// let id = world.add( mecs::entity![
+			/// 	DynStorage::new(5i32),
+			/// 	DynStorage::new("Hello, World!"),
+			/// ] );
+			/// 
+			/// assert_eq!(world.iter_all().count(), 1);
+			/// ```
 			pub fn add(&mut self, entity: Entity<'a, S>) -> EntityId
 			{
 				// Get the id to use for this entity
@@ -172,10 +221,20 @@ use crate::{KeyType, Storage, Entity};
 			
 			/// Removes an entity from this world given it's id
 			/// 
-			/// # Ids
-			/// Currently this function is the only way to remove entities
-			/// from the world, in the future a feature will be added to
-			/// remove them during iteration.
+			/// # Example
+			/// 
+			/// ```rust
+			/// # use mecs::{World, DynStorage};
+			/// let mut world = World::new();
+			/// 
+			/// let id = world.add( mecs::entity![
+			/// 	DynStorage::new(5i32),
+			/// 	DynStorage::new("Hello, World!"),
+			/// ] );
+			/// world.remove(id);
+			/// 
+			/// assert_eq!(world.iter_all().count(), 0);
+			/// ```
 			pub fn remove(&mut self, id: EntityId) -> Option< Entity<'a, S> >
 			{
 				// And remove the entity
@@ -186,12 +245,47 @@ use crate::{KeyType, Storage, Entity};
 		// Access
 		//--------------------------------------------------------------------------------------------------
 			/// Returns a reference to an entity given it's id
+			/// 
+			/// # Example
+			/// 
+			/// ```rust
+			/// # use mecs::{World, DynStorage};
+			/// let mut world = World::new();
+			/// 
+			/// let id = world.add( mecs::entity![
+			/// 	DynStorage::new(5i32),
+			/// 	DynStorage::new("Hello, World!"),
+			/// ] );
+			/// 
+			/// assert_eq!(world.iter_all().count(), 1);
+			/// assert!   ( world.get(id).is_some() );
+			/// assert_eq!(world[id].get::<i32         >(), Some(&5i32           ));
+			/// assert_eq!(world[id].get::<&'static str>(), Some(&"Hello, World!"));
+			/// ```
 			#[must_use]
 			pub fn get(&self, id: EntityId) -> Option<&Entity<'a, S>> {
 				self.entities.get(&id)
 			}
 			
 			/// Returns a mutable reference to an entity given it's id
+			/// 
+			/// # Example
+			/// 
+			/// ```rust
+			/// # use mecs::{World, DynStorage};
+			/// let mut world = World::new();
+			/// 
+			/// let id = world.add( mecs::entity![
+			/// 	DynStorage::new(5i32),
+			/// 	DynStorage::new("Hello, World!"),
+			/// ] );
+			/// 
+			/// assert_eq!(world.iter_all().count(), 1);
+			/// assert!   ( world.get_mut(id).is_some() );
+			/// assert_eq!(world[id].get::<i32>(), Some(&5i32));
+			/// *world[id].get_mut::<i32>().unwrap() = 8;
+			/// assert_eq!(world[id].get::<i32>(), Some(&8i32));
+			/// ```
 			#[must_use]
 			pub fn get_mut(&mut self, id: EntityId) -> Option<&mut Entity<'a, S>> {
 				self.entities.get_mut(&id)
@@ -236,8 +330,14 @@ use crate::{KeyType, Storage, Entity};
 			}
 			
 			/// Returns a mutable iterator over all entities in this world
-			pub fn iter_mut_all(&mut self) -> impl Iterator<Item = &mut Entity<'a, S>> {
+			pub fn iter_all_mut(&mut self) -> impl Iterator<Item = &mut Entity<'a, S>> {
 				self.entities.values_mut()
+			}
+			
+			/// Returns a mutable iterator over all entities in this world
+			#[deprecated(since = "0.2.0", note = "Use `iter_all_mut` instead")]
+			pub fn iter_mut_all(&mut self) -> impl Iterator<Item = &mut Entity<'a, S>> {
+				self.iter_all_mut()
 			}
 			
 			/// Returns an iterator over a predicate
@@ -300,6 +400,33 @@ use crate::{KeyType, Storage, Entity};
 		S::Id: KeyType,
 	{}
 	
+	// Index
+	//--------------------------------------------------------------------------------------------------
+		impl<'a, S> std::ops::Index<EntityId> for World<'a, S>
+		where
+			S    : Storage<'a>,
+			S::Id: KeyType,
+		{
+			type Output = Entity<'a, S>;
+			
+			#[must_use]
+			fn index(&self, id: EntityId) -> &Self::Output {
+				self.get(id).expect("Unknown entity id")
+			}
+		}
+		
+		impl<'a, S> std::ops::IndexMut<EntityId> for World<'a, S>
+		where
+			S    : Storage<'a>,
+			S::Id: KeyType,
+		{
+			#[must_use]
+			fn index_mut(&mut self, id: EntityId) -> &mut Self::Output {
+				self.get_mut(id).expect("Unknown entity id")
+			}
+		}
+	//--------------------------------------------------------------------------------------------------
+	
 	// Serde
 	//--------------------------------------------------------------------------------------------------
 		#[cfg(feature = "serde-serialize")]
@@ -325,10 +452,10 @@ use crate::{KeyType, Storage, Entity};
 		}
 		
 		#[cfg(feature = "serde-serialize")]
-		impl<'a, 'de, S> serde::Deserialize<'de> for World<'a, S>
+		impl<'a, 'de, S, I> serde::Deserialize<'de> for World<'a, S>
 		where
-			S    : Storage<'a> + serde::Deserialize<'de>,
-			S::Id: KeyType,
+			S: Storage<'a, Id=I> + serde::Deserialize<'de>,
+			I: KeyType + 'a,
 		{
 			fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
 			where

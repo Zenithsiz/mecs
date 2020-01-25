@@ -33,7 +33,7 @@ use crate::{util::KeyType, Storage, Entity, World, EntityId};
 		S::Id: KeyType,
 	{
 		/// Reference to the world
-		pub(in super) world: &'b mut World<'a, S>,
+		pub world: &'b mut World<'a, S>,
 		
 		/// The predicate id
 		pub(in super) id: usize,
@@ -50,7 +50,7 @@ use crate::{util::KeyType, Storage, Entity, World, EntityId};
 		S    : Storage<'a>,
 		S::Id: KeyType,
 	{
-		type Item = &'b Entity<'a, S>;
+		type Item = (&'b Entity<'a, S>, EntityId);
 		
 		#[allow(clippy::integer_arithmetic)] // We need to add one to get the next index
 		fn next(&mut self) -> Option< Self::Item >
@@ -69,10 +69,7 @@ use crate::{util::KeyType, Storage, Entity, World, EntityId};
 				if let Some(entity) = self.world.entities.get( &entity_id.get() )
 				{
 					// Transmute it to it's lifetime
-					// TODO: Check if this is fine
-					return Some( unsafe {
-						std::mem::transmute::<&'_ _, &'b _>(entity)
-					});
+					return Some( (entity, entity_id.get()));
 				}
 				
 				// Else set the id to null
@@ -91,7 +88,7 @@ use crate::{util::KeyType, Storage, Entity, World, EntityId};
 		S    : Storage<'a>,
 		S::Id: KeyType,
 	{
-		type Item = &'b mut Entity<'a, S>;
+		type Item = (&'b mut Entity<'a, S>, EntityId);
 		
 		#[allow(clippy::integer_arithmetic)] // We need to add one to get the next index
 		fn next(&mut self) -> Option< Self::Item >
@@ -111,9 +108,9 @@ use crate::{util::KeyType, Storage, Entity, World, EntityId};
 				{
 					// Transmute it to it's lifetime
 					// TODO: Check if this is fine
-					return Some( unsafe {
+					return Some( (unsafe {
 						std::mem::transmute::<&'_ mut _, &'b mut _>(entity)
-					});
+					}, entity_id.get()));
 				}
 				
 				// Else set the id to null

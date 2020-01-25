@@ -37,7 +37,8 @@ fn main()
 	let pred_id = world.add_pred(|entity| entity.has::<Position>() && entity.has::<Velocity>());
 	
 	for i in 0..10 {
-		for entity in world.iter_pred_mut(pred_id).unwrap()
+		let mut pred_iter = world.iter_pred_mut(pred_id).unwrap();
+		while let Some( (entity, id) ) = pred_iter.next()
 		{
 			let vel:      Velocity = *entity.get    ().unwrap();
 			let pos: &mut Position =  entity.get_mut().unwrap();
@@ -46,6 +47,8 @@ fn main()
 			pos.1 += vel.1;
 			
 			println!("{:?}", pos);
+			
+			pred_iter.world.remove(id);
 		}
 	}
 }

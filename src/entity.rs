@@ -244,10 +244,10 @@ use crate::{KeyType, Storage, Component};
 		}
 		
 		#[cfg(feature = "serde-serialize")]
-		impl<'a, 'de, S> serde::Deserialize<'de> for Entity<'a, S>
+		impl<'a, 'de, S, I> serde::Deserialize<'de> for Entity<'a, S>
 		where
-			S    : Storage<'a> + serde::Deserialize<'de>,
-			S::Id: KeyType,
+			S: Storage<'a, Id=I> + serde::Deserialize<'de>,
+			I: KeyType + 'a,
 		{
 			fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
 			where
